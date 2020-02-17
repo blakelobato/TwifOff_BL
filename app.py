@@ -25,6 +25,40 @@ class Tweet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
+
+@app.route("/tweets")
+@app.route("/tweets.json")
+def tweets():
+
+    tweets = Tweet.query.all() #returns a list of class 'alchemy.User
+    #print(len(users))
+    print(type(tweets))
+    print(type(tweets[0]))
+
+    tweets_response = []
+    for t in tweets:
+        tweets_dict = t.__dict__
+        del tweets_dict["_sa_instance_state"]
+        tweets_response.append(tweets_dict)
+    return jsonify(tweets_response)
+
+
+@app.route("/tweets/create", methods=["POST"])
+def create_tweets():
+   print("CREATING A NEW TWEET..")
+   print("FORM DATA:", dict(request.form))
+   
+   if "status" in request.form:
+       tweet = request.form["status"]
+       print(tweet)
+       db.session.add(Tweet(status=tweet))
+       db.session.commit()
+       return jsonify({"message": "CREATED OK", "tweet": tweet})
+   else:
+        return jsonify({"message": "OOPS PLEASE SPECIFY A tweet!"})
+
+
+##################################################################################
 @app.route("/")
 def index():
     #return "Hello World!"
