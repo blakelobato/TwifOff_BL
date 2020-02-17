@@ -1,6 +1,50 @@
 from flask import Flask, jsonify, request, render_template
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+
+
+#
+# Routing
+#
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///web_app_331.db"
+
+db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128))
+
+class Tweet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route("/")
 def index():
@@ -38,7 +82,7 @@ def hello(name=None):
     print("VISITING THE HELLO PAGE")
     print("REQUEST PARAMS:", dict(request.args))
 
-    if "name" in requests.args:
+    if "name" in request.args:
         name = request.args["name"]
         message = f"Hello, {name}"
     else:
