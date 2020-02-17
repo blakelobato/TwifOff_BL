@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello World!"
+    #return "Hello World!"
+    return render_template("homepage.html")
 
 
 @app.route("/about")
@@ -26,7 +27,16 @@ def create_users():
    print("CREATING A NEW USER...")
    print("FORM DATA:", dict(request.form))
    #todo:create a new user
-    return jsonify({"message": "Created OK (TODO)"})
+   return jsonify({"message": "Created OK (TODO)"})
+
+
+
+
+
+
+
+
+
 
 ###FLASK_APP=app.py flask run 
 # used to run the app locally
