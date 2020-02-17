@@ -30,6 +30,23 @@ def create_users():
    return jsonify({"message": "Created OK (TODO)"})
 
 
+# GET /hello
+# GET /hello?name=Polly
+# GET /hello?name=Polly&country=USA
+@app.route("/hello")
+def hello(name=None):
+    print("VISITING THE HELLO PAGE")
+    print("REQUEST PARAMS:", dict(request.args))
+
+    if "name" in requests.args:
+        name = request.args["name"]
+        message = f"Hello, {name}"
+    else:
+        message = "Hello World"
+    #return message
+    return render_template("hello.html", message=message)
+
+
 
 
 
