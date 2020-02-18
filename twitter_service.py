@@ -15,11 +15,18 @@ auth.set_access_token(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET)
 
 client = tweepy.API(auth)
 
-print(type(client))
-print(dir(client))
+# print(type(client))
+# print(dir(client))
+# print("----------")
+
+# public_tweets = client.home_timeline()
+
+# for tweet in public_tweets:
+#     print(type(tweet), tweet.text)
+
 print("----------")
 
-public_tweets = client.home_timeline()
+elon_tweets = client.user_timeline("elonmusk", tweet_mode="extended")
 
-for tweet in public_tweets:
-    print(type(tweet), tweet.text)
+for tweet in elon_tweets:
+    print(type(tweet), tweet.full_text)
