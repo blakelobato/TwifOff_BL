@@ -4,6 +4,15 @@ from web_app.twitter_service import twitter_api_client
 
 my_routes = Blueprint("my_routes", __name__)
 
+@my_routes.route("/")
+def index():
+    return render_template("homepage.html")
+
+
+@my_routes.route("/about")
+def about():
+    return "About Me Page"
+
 @my_routes.route("/tweets")
 @my_routes.route("/tweets.json")
 def tweets():
@@ -18,32 +27,6 @@ def tweets():
         del tweets_dict["_sa_instance_state"]
         tweets_response.append(tweets_dict)
     return jsonify(tweets_response)
-
-
-@my_routes.route("/tweets/create", methods=["POST"])
-def create_tweets():
-    print("CREATING A NEW TWEET..")
-    print("FORM DATA:", dict(request.form))
-
-    if "status" in request.form:
-        tweet = request.form["status"]
-        print(tweet)
-        db.session.add(Tweet(status=tweet))
-        db.session.commit()
-        return jsonify({"message": "CREATED OK", "tweet": tweet})
-    else:
-        return jsonify({"message": "OOPS PLEASE SPECIFY A tweet!"})
-
-
-@my_routes.route("/")
-def index():
-    #return "Hello World!"
-    return render_template("homepage.html")
-
-
-@my_routes.route("/about")
-def about():
-    return "About Me Page"
 
 
 @my_routes.route("/users")
@@ -79,7 +62,19 @@ def create_users():
 @my_routes.route("/get_tweets")
 def get_tweets():
     tweets = []
-    client = twitter_api_client()
+    #client = twitter_api_client()
+    client = current_app.config["TWITTER_API_CLIENT"]
+    statuses = client.user_timeline("elonmusk", tweet_mode="extended")
+    for status in statuses:
+        tweets.append({"id": status.id_str, "message": status.full_text})
+    print(tweets)
+    return jsonify(tweets)
+
+@my_routes.route("/get_twitter_user")
+def get_twitter_user():
+    tweets = []
+    #client = twitter_api_client()
+    client = current_app.config["TWITTER_API_CLIENT"]
     statuses = client.user_timeline("elonmusk", tweet_mode="extended")
     for status in statuses:
         tweets.append({"id": status.id_str, "message": status.full_text})
@@ -103,3 +98,18 @@ def hello(name=None):
         message = "Hello World"
         #return message
     return render_template("hello.html", message=message)
+
+
+@my_routes.route("/tweets/create", methods=["POST"])
+def create_tweets():
+    print("CREATING A NEW TWEET..")
+    print("FORM DATA:", dict(request.form))
+
+    if "status" in request.form:
+        tweet = request.form["status"]
+        print(tweet)
+        db.session.add(Tweet(status=tweet))
+        db.session.commit()
+        return jsonify({"message": "CREATED OK", "tweet": tweet})
+    else:
+        return jsonify({"message": "OOPS PLEASE SPECIFY A tweet!"})
