@@ -6,12 +6,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 from web_app.models import db, User, Tweet, migrate
-from web_app.new_routes import new_routes, twitter_api_client
+from web_app.new_routes import new_routes
 
 
-load_dotenv()
+#load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", default="OOPS")
+DATABASE_URL="sqlite:///twitoff.db" 
+#DATABASE_URL = os.getenv("DATABASE_URL", default="OOPS")
 
 def create_app():
     app = Flask(__name__)
@@ -23,8 +24,6 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
-
-    #app.register_blueprint(my_routes)
     app.register_blueprint(new_routes)
     
     return app

@@ -22,7 +22,7 @@ def index():
 # DATABASE & EMBEDDING 
 #
 
-@new_routes.route("users")
+@new_routes.route("/users")
 @new_routes.route("/users.json")
 def list_users():
     print("Here's a List of Users!")
