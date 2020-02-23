@@ -56,19 +56,36 @@ def show_user(screen_name=None):
         db.session.commit()
 
 
-        # Get Tweets now:
-        statuses = client.user_timeline(screen_name, tweet_mode = "extended", count=50, exclude_replies=True, include_rts=False)
+        statuses = client.user_timeline(screen_name, tweet_mode = "extended", count=10, exclude_replies=True, include_rts=False)
+
         for status in statuses:
             print(status.full_text)
             # Find or create a database tweet
-            db_tweet = Tweet.query.get(status.id) or Tweet(id = status.id)
-            print(db_tweet)
-            # Update database tweet
-            db_tweet.user_id = status.author.id 
-            db_tweet.full_text = status.full_text
-            embedding = basilica_client.embed_sentence(status.full_text, model="twitter")
-            db_tweet.embedding = embeddingdb.session.add(db_tweet)
+            if db.session.query(Tweet.id) != status.id:
+                embedding = basilica_client.embed_sentence(status.full_text, model="twitter")
+                tweet = Tweet(id = status.id,
+                          user_id = status.author.id,
+                          full_text = status.full_text,
+                          embedding = embedding)
+                db.session.add(tweet)
+            else:
+                pass
         db.session.commit()
+
+        # # Get Tweets now:
+        # statuses = client.user_timeline(screen_name, tweet_mode = "extended", count=50, exclude_replies=True, include_rts=False)
+        # for status in statuses:
+        #     print(status.full_text)
+        #     # Find or create a database tweet
+        #     db_tweet = Tweet.query.get(status.id) or Tweet(id = status.id)
+        #     print(db_tweet)
+        #     # Update database tweet
+        #     db_tweet.user_id = status.author.id 
+        #     db_tweet.full_text = status.full_text
+        #     embedding = basilica_client.embed_sentence(status.full_text, model="twitter")
+        #     db_tweet.embedding = embedding
+        #     #db_tweet.embedding = embeddingdb.session.add(db_tweet)
+        # db.session.commit()
 
         #### TODO user_profile info for the return
         return render_template("user_profile.html", user=db_user, tweets=db_user.tweets)
